@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense &amp; Budget Visualizer</title>
+
+    <!-- Favicon (emoji fallback) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>" />
+
+    <!-- App Stylesheet -->
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  </head>
+
+  <body>
+    <!-- ===================== HEADER ===================== -->
+    <header class="app-header">
+      <div class="container">
+        <h1 class="app-title">💰 Expense &amp; Budget</h1>
+        <p class="app-subtitle">Track your daily spending at a glance</p>
+      </div>
+    </header>
+
+    <!-- ===================== MAIN ===================== -->
+    <main class="container">
+
+      <!-- ── BALANCE CARD ── -->
+      <section class="card balance-card" aria-label="Total Balance">
+        <p class="balance-label">Total Spent</p>
+        <p class="balance-amount" id="balanceAmount">Rp 0</p>
+      </section>
+
+      <!-- ── ADD TRANSACTION FORM ── -->
+      <section class="card form-card" aria-label="Add Transaction">
+        <h2 class="section-title">Add Transaction</h2>
+
+        <form id="transactionForm" novalidate>
+          <!-- Item Name -->
+          <div class="form-group">
+            <label class="form-label" for="itemName">Item Name</label>
+            <input
+              class="form-input"
+              type="text"
+              id="itemName"
+              placeholder="e.g. Lunch, Grab, Netflix"
+              maxlength="60"
+              autocomplete="off"
+            />
+          </div>
+
+          <!-- Amount -->
+          <div class="form-group">
+            <label class="form-label" for="itemAmount">Amount (Rp)</label>
+            <input
+              class="form-input"
+              type="number"
+              id="itemAmount"
+              placeholder="e.g. 45000"
+              min="1"
+              step="any"
+            />
+          </div>
+
+          <!-- Category + Add Custom Category -->
+          <div class="form-group">
+            <label class="form-label" for="itemCategory">Category</label>
+            <div class="category-row">
+              <select class="form-input form-select" id="itemCategory"></select>
+              <button
+                type="button"
+                class="btn btn-outline btn-icon"
+                id="addCategoryBtn"
+                title="Add custom category"
+                aria-label="Add custom category"
+              >＋</button>
+            </div>
+          </div>
+
+          <!-- Custom category inline input (hidden by default) -->
+          <div class="form-group" id="customCategoryGroup" hidden>
+            <label class="form-label" for="customCategoryInput">New Category Name</label>
+            <div class="category-row">
+              <input
+                class="form-input"
+                type="text"
+                id="customCategoryInput"
+                placeholder="e.g. Health"
+                maxlength="30"
+                autocomplete="off"
+              />
+              <button type="button" class="btn btn-success btn-icon" id="saveCategoryBtn" title="Save category">✓</button>
+              <button type="button" class="btn btn-ghost btn-icon" id="cancelCategoryBtn" title="Cancel">✕</button>
+            </div>
+          </div>
+
+          <!-- Error message -->
+          <p class="form-error" id="formError" role="alert" hidden></p>
+
+          <!-- Submit -->
+          <button type="submit" class="btn btn-primary btn-full">
+            + Add Transaction
+          </button>
+        </form>
+      </section>
+
+      <!-- ── MONTHLY SUMMARY ── -->
+      <section class="card monthly-card" aria-label="Monthly Summary">
+        <h2 class="section-title">Monthly Summary</h2>
+        <div class="monthly-selector-row">
+          <label class="form-label sr-only" for="monthSelector">Select Month</label>
+          <select class="form-input form-select" id="monthSelector"></select>
+          <span class="monthly-total" id="monthlyTotal">Rp 0</span>
+        </div>
+        <div id="monthlyCategoryBreakdown" class="monthly-breakdown"></div>
+      </section>
+
+      <!-- ── PIE CHART ── -->
+      <section class="card chart-card" aria-label="Spending by Category">
+        <h2 class="section-title">Spending by Category</h2>
+        <div class="chart-container" id="chartContainer">
+          <canvas id="spendingChart" aria-label="Pie chart of spending by category" role="img"></canvas>
+          <div class="chart-empty" id="chartEmpty" hidden>
+            <span class="chart-empty-icon">📊</span>
+            <p>No spending data yet.<br />Add a transaction to see your chart!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── TRANSACTION LIST ── -->
+      <section class="card list-card" aria-label="Transaction List">
+        <div class="list-header">
+          <h2 class="section-title">Transactions</h2>
+          <div class="sort-row">
+            <label class="form-label sr-only" for="sortSelect">Sort by</label>
+            <select class="form-input form-select sort-select" id="sortSelect">
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="amount-desc">Amount: High → Low</option>
+              <option value="amount-asc">Amount: Low → High</option>
+              <option value="category-asc">Category: A → Z</option>
+            </select>
+          </div>
+        </div>
+
+        <ul class="transaction-list" id="transactionList" aria-live="polite">
+          <!-- Populated by JS -->
+        </ul>
+
+        <!-- Empty state -->
+        <div class="list-empty" id="listEmpty">
+          <span class="list-empty-icon">🧾</span>
+          <p>No transactions yet.<br />Add one above to get started!</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="app-footer">
+      <div class="container">
+        <p>Expense &amp; Budget Visualizer &mdash; built by Firhan Arif</p>
+      </div>
+    </footer>
+
+    <!-- App Script (deferred so DOM is ready) -->
+    <script src="js/app.js" defer></script>
+  </body>
+</html>
