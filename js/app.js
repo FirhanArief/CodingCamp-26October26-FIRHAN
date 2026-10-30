@@ -11,6 +11,7 @@
 const STORAGE_KEYS = {
   transactions: 'expense_transactions',
   categories:   'expense_categories',
+  theme:        'expense_theme',
 };
 
 /** Default categories always available */
@@ -620,21 +621,67 @@ const Events = {
 };
 
 /* ============================================================
-   7. INIT — Bootstrap the application
+   7. THEME MODULE
+   Handles dark / light mode toggle.
+   Persists preference in LocalStorage.
+   ============================================================ */
+
+const Theme = {
+  /** Apply a theme ('dark' | 'light') to the document */
+  apply(mode) {
+    document.documentElement.setAttribute('data-theme', mode);
+    const icon  = document.getElementById('toggleIcon');
+    const label = document.getElementById('toggleLabel');
+    if (mode === 'dark') {
+      if (icon)  icon.textContent  = '☀️';
+      if (label) label.textContent = 'Light';
+    } else {
+      if (icon)  icon.textContent  = '🌙';
+      if (label) label.textContent = 'Dark';
+    }
+  },
+
+  /** Load saved preference and apply it */
+  load() {
+    const saved = Storage.get(STORAGE_KEYS.theme, 'light');
+    this.apply(saved);
+  },
+
+  /** Toggle between dark and light, persist the result */
+  toggle() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const next    = current === 'dark' ? 'light' : 'dark';
+    this.apply(next);
+    Storage.set(STORAGE_KEYS.theme, next);
+  },
+
+  /** Wire the toggle button */
+  init() {
+    this.load();
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.addEventListener('click', () => this.toggle());
+  },
+};
+
+/* ============================================================
+   8. INIT — Bootstrap the application
    ============================================================ */
 
 function init() {
-  // 1. Load data from LocalStorage
+  // 1. Load theme preference first (before paint)
+  Theme.init();
+
+  // 2. Load data from LocalStorage
   State.load();
 
-  // 2. Cache DOM elements
+  // 3. Cache DOM elements
   Render.cacheEls();
 
-  // 3. Wire up form and event listeners
+  // 4. Wire up form and event listeners
   Form.init();
   Events.init();
 
-  // 4. Initial full render
+  // 5. Initial full render
   Render.all();
 }
 
