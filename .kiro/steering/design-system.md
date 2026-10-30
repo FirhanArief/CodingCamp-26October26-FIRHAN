@@ -16,8 +16,8 @@ Selalu ikuti panduan ini saat melakukan perubahan pada `css/style.css` atau `js/
 - **Dark mode:** Merah maroon gelap `#1a0a0a`
 
 ### Brand Color (Primary)
-- **Light:** `#6c63ff` (ungu)
-- **Dark:** `#8b83ff` (ungu lebih terang untuk kontras)
+- **Light:** `#1a1a1a` (hitam)
+- **Dark:** `#444444` (abu gelap untuk kontras di background gelap)
 
 ### Header & Footer
 - **Light:** `#4a0f0f` (maroon sangat gelap)
